@@ -1,0 +1,134 @@
+{
+  "brand": {
+    "name": "Moath Ayman"
+  },
+  "nav": {
+    "hero": "Start",
+    "about": "About",
+    "skills": "Skills",
+    "projects": "Projects",
+    "experience": "Experience",
+    "contact": "Contact"
+  },
+  "hero": {
+    "hooks": [
+      "Systems that outlive\ntheir first version.",
+      "Most systems break\nat scale. Mine start there.",
+      "Features expire.\nSystems stay.",
+      "Structure first.\nEverything else follows.",
+      "Built once.\nBuilt to grow."
+    ],
+    "roles": ["Full-stack systems developer", "Database designer"],
+    "photoAlt": "Moath Ayman",
+    "cta": {
+      "projects": "View projects",
+      "contact": "Get in touch"
+    }
+  },
+  "about": {
+    "leadPre": "From an idea on paper to a system that",
+    "leadEm": "holds up in real use.",
+    "body": "I work both ends of the build: backend logic and database structure underneath, and the interface people actually touch on top. The idea does not stop at a prototype — it ends as a system that runs, stays secure, and can be handed to anyone.",
+    "values": [
+      { "title": "Idea to system", "desc": "Requirements, structure, and the build that carries them through." },
+      { "title": "Secure by design", "desc": "Permissions, validation, and data protection built in — not bolted on after." },
+      { "title": "Clear and easy to use", "desc": "Interfaces people find their way through without being taught." },
+      { "title": "Clean, readable code", "desc": "Organised and documented, so any developer can take it over." }
+    ]
+  },
+  "skills": {
+    "leadPre": "Tools are the easy part. The skill is knowing",
+    "leadEm": "which layer a problem belongs to.",
+    "layers": [
+      {
+        "name": "Data",
+        "desc": "Schema design, relations, and queries that stay fast as the table grows.",
+        "chips": ["PostgreSQL", "MySQL", "Schema design", "Indexing"]
+      },
+      {
+        "name": "Server",
+        "desc": "Business logic, authentication, roles and permissions, APIs.",
+        "chips": ["Laravel", "PHP", "REST APIs", "Auth & policies"]
+      },
+      {
+        "name": "Interface",
+        "desc": "Design-faithful implementation, state management, responsive behaviour.",
+        "chips": ["Vue 3", "Pinia", "Tailwind CSS", "React"]
+      },
+      {
+        "name": "Handover",
+        "desc": "Work another developer can pick up: reviewed, documented, versioned.",
+        "chips": ["Git", "Code review", "Documentation"]
+      }
+    ]
+  },
+  "projects": {
+    "hint": "View details",
+    "close": "Close",
+    "items": [
+      {
+        "name": "DENT",
+        "status": "In active development",
+        "role": "Co-founder & lead system developer",
+        "desc": "Arabic dental education and marketplace platform for Palestinian dental students and professionals. Architecture, database schema, backend API, and frontend — one system serving three separate roles.",
+        "metrics": [["3", "ROLES"], ["20+", "TABLES"], ["7", "MODULES"]],
+        "chips": ["Laravel 11", "PostgreSQL", "Vue 3", "Pinia", "Tailwind"],
+        "link": "Live demo"
+      },
+      {
+        "name": "Burgelo",
+        "status": "Backend in progress",
+        "role": "Solo full-stack developer",
+        "desc": "Restaurant order management — not just food ordering. Customer, chef, delivery, accountant and admin each see the same order from their own angle.",
+        "metrics": [["5", "ROLES"], ["8", "MODULES"]],
+        "chips": ["Vue 3", "Laravel"],
+        "link": "Live demo"
+      },
+      {
+        "name": "SpaceFlex",
+        "status": "Completed 2025",
+        "role": "Full-stack developer",
+        "desc": "Rental-space marketplace built as a graduation project. UML modelling, multi-role dashboards, and payment gateway integration.",
+        "metrics": [["3", "UML MODELS"], ["2025", "DELIVERED"]],
+        "chips": ["React", "Laravel"],
+        "link": "View repository",
+        "url": "https://github.com/imoathayman/Space-Flex"
+      }
+    ]
+  },
+  "experience": {
+    "leadPre": "From the first certificate to",
+    "leadEm": "a platform in production.",
+    "filters": ["All", "Work", "Learning"],
+    "work": [
+      { "y": "Jul — Aug 2023", "r": "Web development intern", "o": "Learn More Foundation · 120 hrs, Canadian Board accredited" },
+      { "y": "Dec 2024 — May 2025", "r": "Full-stack developer", "o": "SpaceFlex — graduation project" },
+      { "y": "ADD DATE", "todo": true, "r": "Freelance developer", "o": "Digital wedding invitation SPA · Vue 3 + Tailwind" },
+      { "y": "Oct 2025", "r": "Student recruitment & academic advisor", "o": "University of Gaza · temporary contract" },
+      { "y": "May — Aug 2026", "r": "Co-founder & lead system developer", "o": "DENT Platform" }
+    ],
+    "learn": [
+      { "y": "2020 — 2025", "r": "BSc Computer Science", "o": "Al-Azhar University, Gaza" },
+      { "y": "2022", "r": "Full stack web developer", "o": "Top Tech · 70 hrs, excellent" },
+      { "y": "2023", "r": "Web development: JS, MySQL, PHP, Laravel", "o": "Vision Plus · 60 hrs" },
+      { "y": "Jul 2025", "r": "Entrepreneurship & tech program", "o": "Youth Innovation Hub · 130 hrs" },
+      { "y": "Aug 2025", "r": "Flutter mobile development", "o": "Training programme with Oxfam" },
+      { "y": "Apr 2026", "r": "Digital media & digital security", "o": "Palestinian Journalist Syndicate · 33 hrs" }
+    ]
+  },
+  "contact": {
+    "lead": "Have a system in mind?",
+    "sub": "Tell me what it needs to do. I will tell you honestly whether I am the right person to build it.",
+    "links": [
+      { "label": "EMAIL", "value": "imoathayman@gmail.com", "href": "mailto:imoathayman@gmail.com" },
+      { "label": "LINKEDIN", "value": "linkedin.com/in/imoathayman", "href": "https://linkedin.com/in/imoathayman" },
+      { "label": "GITHUB", "value": "github.com/imoathayman", "href": "https://github.com/imoathayman" }
+    ],
+    "formTitle": "Send a message",
+    "fields": { "name": "NAME", "email": "EMAIL", "message": "WHAT ARE YOU BUILDING?" },
+    "send": "Send",
+    "note": "Demo form — not connected to a backend yet.",
+    "done": "Message sent. I reply within a day.",
+    "foot": "© 2026 Moath Ayman · Gaza, Palestine"
+  }
+}
