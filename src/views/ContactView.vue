@@ -266,11 +266,21 @@ function handleSubmit() {
 }
 
 @media (max-width: 900px) {
+  /* Links + form stacked exceed 100dvh on short phones — without scrolling, the
+     submit button itself fell below the fold and the form could not be sent. */
+  .contact {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
   .ct-wrap {
+    position: static;
+    transform: none;
+    inset: auto;
     grid-template-columns: 1fr;
     gap: 26px;
-    inset-inline-start: 24px;
-    inset-inline-end: 24px;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
   .ct-field {
     width: 90vw;

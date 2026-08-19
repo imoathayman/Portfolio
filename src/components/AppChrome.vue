@@ -9,6 +9,7 @@ const { t, locale } = useI18n()
 const { cur, go } = useSections()
 
 const counterText = computed(() => String(cur.value + 1).padStart(2, '0') + ' / 06')
+const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
 </script>
 
 <template>
@@ -47,6 +48,9 @@ const counterText = computed(() => String(cur.value + 1).padStart(2, '0') + ' / 
         ></svg>
         <span class="tip">{{ t(`nav.${key}`) }}</span>
       </button>
+      <!-- Touch has no hover, so .tip never shows on mobile; name the active
+           section instead so the icon row is not six unlabelled glyphs. -->
+      <span class="dock-active-label" aria-hidden="true">{{ currentLabel }}</span>
     </nav>
 
     <div class="counter">{{ counterText }}</div>
@@ -103,6 +107,9 @@ const counterText = computed(() => String(cur.value + 1).padStart(2, '0') + ' / 
   color: var(--color-ink);
   opacity: 0.5;
   padding: 4px 2px;
+  /* "ع" is a single narrow glyph — its box was 11px wide before this floor */
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
 }
 .lang button.on {
   opacity: 1;
@@ -162,6 +169,10 @@ const counterText = computed(() => String(cur.value + 1).padStart(2, '0') + ' / 
 .dock button:focus-visible .tip {
   opacity: 1;
 }
+/* desktop keeps the hover tooltip; the active-section label is mobile-only */
+.dock-active-label {
+  display: none;
+}
 
 .counter {
   position: absolute;
@@ -177,12 +188,49 @@ const counterText = computed(() => String(cur.value + 1).padStart(2, '0') + ' / 
     flex-direction: row;
     top: auto;
     bottom: 26px;
-    inset-inline-start: 50%;
-    transform: translateX(-50%);
-    gap: 18px;
+    /* `inset-inline-start:50%` + `translateX(-50%)` does NOT centre in RTL: the inset
+       resolves to `right:50%` while translateX stays physical, so the two compound and
+       pushed the whole dock off-screen in Arabic. Auto margins centre in both directions. */
+    inset-inline: 0;
+    margin-inline: auto;
+    width: max-content;
+    transform: none;
+    gap: 0;
+    /* Sections scroll underneath, so the dock needs its own surface — without it
+       list text collided with the icons mid-scroll. Pill matches .chip language. */
+    background: var(--color-bg);
+    border: 1px solid var(--color-soft);
+    border-radius: 999px;
+    padding: 4px 8px;
+  }
+  .dock button {
+    /* 22px icon kept visually; hit area expanded to the 44px accessible minimum */
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+  .dock button[aria-current='true'] {
+    /* scaling the 44px box would enlarge the pill; scale the glyph instead */
+    transform: none;
+  }
+  .dock button[aria-current='true'] svg {
+    transform: scale(1.12);
   }
   .dock .tip {
     display: none;
+  }
+  .dock-active-label {
+    display: block;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    /* same RTL-safe centring as .dock above */
+    inset-inline: 0;
+    margin-inline: auto;
+    width: max-content;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-ink-2);
+    pointer-events: none;
   }
   .counter {
     display: none;

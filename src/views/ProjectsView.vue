@@ -247,9 +247,10 @@ onBeforeUnmount(() => {
   transition: color 420ms var(--ease);
 }
 .pr-tmeta {
-  font-size: 10.5px;
+  /* was 10.5px / --color-ink-2 on the soft-blue tile = 3.24:1, below the 4.5:1 floor */
+  font-size: 12px;
   font-weight: 600;
-  color: var(--color-ink-2);
+  color: var(--color-ink);
   margin-top: 3px;
   letter-spacing: 0.02em;
   transition: color 420ms var(--ease);
@@ -258,7 +259,9 @@ onBeforeUnmount(() => {
   color: #fff;
 }
 .pr-tile.act .pr-tmeta {
-  color: var(--color-soft);
+  /* --color-soft on --color-primary-deep was 3.5:1. Reusing #fff rather than adding a
+     palette tint; hierarchy against .pr-tname still reads via size (12 vs 15) + weight. */
+  color: #fff;
 }
 
 .pr-active {
@@ -481,7 +484,12 @@ onBeforeUnmount(() => {
     transform: scale(1.1);
   }
   .pr-active {
-    width: 88vw;
+    /* was 88vw → 21.6px gutters, out of step with the 24px used everywhere else */
+    width: calc(100vw - 2 * var(--gutter-mobile));
+  }
+  .pr-wrap {
+    /* keep the centred stage clear of the fixed dock */
+    padding-block-end: var(--dock-clearance);
   }
   .pr-half {
     width: 100%;
@@ -490,7 +498,7 @@ onBeforeUnmount(() => {
   }
   .pr-info {
     width: auto;
-    inset-inline: 24px;
+    inset-inline: var(--gutter-mobile);
     top: auto;
     bottom: 5vh;
     transform: none;

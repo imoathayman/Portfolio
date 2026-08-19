@@ -132,9 +132,19 @@ const { t, tm } = useI18n()
 }
 
 @media (max-width: 900px) {
+  /* 4 layers + chips exceed 100dvh on short phones; without this the last layer
+     is clipped and unreachable (no page scroll). Same pattern as ExperienceView. */
+  .skills {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
   .sk-wrap {
-    inset-inline-start: 24px;
-    inset-inline-end: 24px;
+    position: static;
+    transform: none;
+    inset: auto;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
   .layer {
     grid-template-columns: 17px minmax(0, 1fr);

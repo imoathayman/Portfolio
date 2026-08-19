@@ -111,11 +111,21 @@ const { t, tm } = useI18n()
 }
 
 @media (max-width: 900px) {
+  /* Fits at 640px tall but overflows once the browser URL bar takes ~80px.
+     Scrolls only when it needs to; short content still reads as a static screen. */
+  .about {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
   .about-wrap {
-    inset-inline-start: 24px;
-    inset-inline-end: 24px;
+    position: static;
+    transform: none;
+    inset: auto;
     grid-template-columns: 1fr;
     gap: 28px;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
 }
 </style>

@@ -228,8 +228,9 @@ onBeforeUnmount(() => {
 
 @media (max-width: 900px) {
   .hero-content {
-    inset-inline-start: clamp(24px, 6vw, 48px);
-    max-width: 74vw;
+    inset-inline-start: var(--gutter-mobile);
+    inset-inline-end: var(--gutter-mobile);
+    max-width: none;
     top: 32%;
   }
   .hero-field {

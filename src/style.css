@@ -19,6 +19,15 @@
   --ease: cubic-bezier(.65, 0, .35, 1);
   --ease-spin: cubic-bezier(.72, 0, .22, 1);
   --step: 30deg;
+
+  /* Mobile layout tokens — shared by every section's max-width:900px block so the
+     gutter and the dock clearance stay in sync. Change here, not per section. */
+  --gutter-mobile: 24px;
+  --pad-block-mobile: 48px;
+  /* dock sits at bottom:26px and is 44px tall (touch target) → 70px, +26px breathing */
+  --dock-clearance: 96px;
+  /* minimum accessible touch target (WCAG 2.5.5) */
+  --tap-min: 44px;
 }
 
 *, *::before, *::after {

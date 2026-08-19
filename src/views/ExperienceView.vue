@@ -229,11 +229,13 @@ const railClass = computed(() => ({
     -webkit-overflow-scrolling: touch;
   }
   .ex-wrap {
+    /* Once static, inset-inline-* is dead CSS — the gutter must come from padding.
+       padding-block-end clears the fixed dock so the last card isn't flush against it. */
     position: static;
     transform: none;
-    inset-inline-start: 24px;
-    inset-inline-end: 24px;
-    padding-block: 48px;
+    inset: auto;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
   .ex-rail {
     grid-template-rows: auto auto;
