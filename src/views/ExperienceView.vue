@@ -229,9 +229,9 @@ const railClass = computed(() => ({
     -webkit-overflow-scrolling: touch;
   }
   .ex-wrap {
-    /* Once static, inset-inline-* is dead CSS — the gutter must come from padding.
-       padding-block-end clears the fixed dock so the last card isn't flush against it. */
-    position: static;
+    /* Once relative, padding-inline sets the gutters and z-index ensures content stays above background */
+    position: relative;
+    z-index: 2;
     transform: none;
     inset: auto;
     padding-inline: var(--gutter-mobile);

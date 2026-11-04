@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSections, SECTION_KEYS } from '../composables/useSections'
 import { NAV_ICON_PATHS } from '../constants/navIcons'
-import logoUrl from '../assets/logo.png'
+import logoUrl from '../assets/logo.webp'
 
 const { t, locale } = useI18n()
 const { cur, go } = useSections()
@@ -14,18 +14,20 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
 
 <template>
   <div class="chrome">
-    <div class="brand">
-      <img class="mark" :src="logoUrl" alt="" />
-      <span>{{ t('brand.name') }}</span>
-    </div>
+    <header class="chrome-header">
+      <div class="brand">
+        <img class="mark" :src="logoUrl" alt="" />
+        <span>{{ t('brand.name') }}</span>
+      </div>
 
-    <div class="lang">
-      <button type="button" :class="{ on: locale === 'en' }" @click="locale = 'en'">EN</button>
-      <span style="opacity: 0.4">/</span>
-      <button type="button" :class="{ on: locale === 'ar' }" @click="locale = 'ar'">ع</button>
-    </div>
+      <div class="lang">
+        <button type="button" :class="{ on: locale === 'en' }" @click="locale = 'en'">EN</button>
+        <span style="opacity: 0.4">/</span>
+        <button type="button" :class="{ on: locale === 'ar' }" @click="locale = 'ar'">ع</button>
+      </div>
+    </header>
 
-    <nav class="dock" :aria-label="t('nav.hero')">
+    <nav class="dock" :aria-label="t('nav.title')">
       <button
         v-for="(key, i) in SECTION_KEYS"
         :key="key"
@@ -69,6 +71,9 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
 .chrome > * {
   pointer-events: auto;
 }
+.chrome-header {
+  display: contents;
+}
 
 .brand {
   position: absolute;
@@ -105,7 +110,7 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
   border: 0;
   cursor: pointer;
   color: var(--color-ink);
-  opacity: 0.5;
+  opacity: 0.72;
   padding: 4px 2px;
   /* "ع" is a single narrow glyph — its box was 11px wide before this floor */
   min-width: var(--tap-min);
@@ -184,6 +189,46 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
 }
 
 @media (max-width: 900px) {
+  .chrome-header {
+    display: flex;
+    position: absolute;
+    top: 0;
+    inset-inline: 0;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--gutter-mobile);
+    background: rgba(253, 252, 249, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(180, 211, 232, 0.45);
+    z-index: 7;
+  }
+  .brand {
+    position: static;
+    top: auto;
+    inset: auto;
+    gap: 8px;
+  }
+  .mark {
+    height: 28px;
+  }
+  .brand span {
+    font-size: 13.5px;
+  }
+  .lang {
+    position: static;
+    top: auto;
+    inset: auto;
+    gap: 4px;
+    font-size: 12.5px;
+  }
+  .lang button {
+    min-width: 34px;
+    min-height: 34px;
+    padding: 2px 4px;
+  }
+
   .dock {
     flex-direction: row;
     top: auto;
@@ -219,17 +264,26 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
     display: none;
   }
   .dock-active-label {
-    display: block;
+    display: inline-flex;
+    align-items: center;
     position: absolute;
-    bottom: calc(100% + 10px);
+    bottom: calc(100% + 8px);
     /* same RTL-safe centring as .dock above */
     inset-inline: 0;
     margin-inline: auto;
     width: max-content;
     white-space: nowrap;
-    font-size: 12px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
     font-weight: 600;
-    color: var(--color-ink-2);
+    color: var(--color-ink);
+    background: rgba(253, 252, 249, 0.95);
+    border: 1px solid var(--color-soft);
+    border-radius: 999px;
+    padding: 3px 12px;
+    box-shadow: 0 2px 8px rgba(43, 43, 40, 0.06);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     pointer-events: none;
   }
   .counter {

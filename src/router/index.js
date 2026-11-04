@@ -13,10 +13,11 @@ const routes = [
   { path: '/projects', name: 'projects', component: ProjectsView },
   { path: '/experience', name: 'experience', component: ExperienceView },
   { path: '/contact', name: 'contact', component: ContactView },
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 

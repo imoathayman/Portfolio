@@ -12,6 +12,13 @@ const submitted = ref(false)
 function handleSubmit() {
   submitted.value = true
 }
+
+function resetForm() {
+  form.name = ''
+  form.email = ''
+  form.message = ''
+  submitted.value = false
+}
 </script>
 
 <template>
@@ -48,21 +55,21 @@ function handleSubmit() {
         <h3>{{ t('contact.formTitle') }}</h3>
         <div class="ct-field-row">
           <label for="cf-name">{{ t('contact.fields.name') }}</label>
-          <input id="cf-name" v-model="form.name" type="text" autocomplete="name" />
+          <input id="cf-name" v-model="form.name" type="text" autocomplete="name" required minlength="2" />
         </div>
         <div class="ct-field-row">
           <label for="cf-email">{{ t('contact.fields.email') }}</label>
-          <input id="cf-email" v-model="form.email" type="email" autocomplete="email" />
+          <input id="cf-email" v-model="form.email" type="email" autocomplete="email" required />
         </div>
         <div class="ct-field-row">
           <label for="cf-message">{{ t('contact.fields.message') }}</label>
-          <textarea id="cf-message" v-model="form.message"></textarea>
+          <textarea id="cf-message" v-model="form.message" required minlength="6"></textarea>
         </div>
         <button type="submit" class="ct-send">{{ t('contact.send') }}</button>
         <p class="ct-note">{{ t('contact.note') }}</p>
       </form>
 
-      <div class="ct-form ct-form--done" v-else>
+      <div class="ct-form ct-form--done" v-else role="status" aria-live="polite">
         <div class="ct-done">
           <div>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -70,6 +77,9 @@ function handleSubmit() {
             </svg>
           </div>
           <p>{{ t('contact.done') }}</p>
+          <button type="button" class="ct-reset-btn" @click="resetForm">
+            {{ t('contact.reset') }}
+          </button>
         </div>
       </div>
     </div>
@@ -95,6 +105,7 @@ function handleSubmit() {
   border-radius: 52% 48% 44% 56% / 48% 54% 46% 52%;
   z-index: 0;
   opacity: 0.9;
+  pointer-events: none;
 }
 .ct-ring {
   position: absolute;
@@ -256,6 +267,22 @@ function handleSubmit() {
   font-size: 15px;
   font-weight: 600;
 }
+.ct-reset-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary-deep);
+  background: none;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 4px;
+  transition: border-color var(--dur) var(--ease);
+}
+.ct-reset-btn:hover {
+  border-color: var(--color-primary-deep);
+}
 .ct-foot {
   position: absolute;
   bottom: 30px;
@@ -274,7 +301,8 @@ function handleSubmit() {
     -webkit-overflow-scrolling: touch;
   }
   .ct-wrap {
-    position: static;
+    position: relative;
+    z-index: 2;
     transform: none;
     inset: auto;
     grid-template-columns: 1fr;
@@ -283,8 +311,12 @@ function handleSubmit() {
     padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
   .ct-field {
-    width: 90vw;
-    inset-inline-end: -30vw;
+    width: 60vw;
+    height: 35vh;
+    bottom: -8vh;
+    inset-inline-end: -20vw;
+    opacity: 0.22;
+    pointer-events: none;
   }
   .ct-ring,
   .ct-foot {

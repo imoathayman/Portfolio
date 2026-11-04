@@ -44,6 +44,7 @@ const { t, tm } = useI18n()
   border-radius: 50%;
   background: var(--color-bg-alt);
   z-index: 0;
+  pointer-events: none;
 }
 
 .sk-wrap {
@@ -140,7 +141,8 @@ const { t, tm } = useI18n()
     -webkit-overflow-scrolling: touch;
   }
   .sk-wrap {
-    position: static;
+    position: relative;
+    z-index: 2;
     transform: none;
     inset: auto;
     padding-inline: var(--gutter-mobile);

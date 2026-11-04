@@ -42,6 +42,7 @@ const { t, tm } = useI18n()
   border-radius: 50%;
   background: var(--color-bg-alt);
   z-index: 0;
+  pointer-events: none;
 }
 .about-arc-2 {
   position: absolute;
@@ -52,6 +53,7 @@ const { t, tm } = useI18n()
   border-radius: 50%;
   border: 1px solid var(--color-soft);
   z-index: 0;
+  pointer-events: none;
 }
 
 .about-wrap {
@@ -119,7 +121,8 @@ const { t, tm } = useI18n()
     -webkit-overflow-scrolling: touch;
   }
   .about-wrap {
-    position: static;
+    position: relative;
+    z-index: 2;
     transform: none;
     inset: auto;
     grid-template-columns: 1fr;

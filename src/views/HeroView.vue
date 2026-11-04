@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSections, SECTION_KEYS } from '../composables/useSections'
-import photoUrl from '../assets/moath.png'
+import photoUrl from '../assets/moath.webp'
 
 const { t, tm, locale } = useI18n()
 const { go } = useSections()
@@ -42,13 +42,13 @@ async function typeLoop(token) {
     for (let n = 1; n <= units.length; n++) {
       if (token !== typeToken) return
       roleText.value = units.slice(0, n).join(joiner)
-      await sleep(rtl ? 150 : 55)
+      await sleep(rtl ? 360 : 55)
     }
     await sleep(2000)
     for (let n = units.length - 1; n >= 0; n--) {
       if (token !== typeToken) return
       roleText.value = units.slice(0, n).join(joiner)
-      await sleep(rtl ? 70 : 28)
+      await sleep(rtl ? 120 : 28)
     }
     await sleep(280)
     i++
@@ -79,7 +79,7 @@ onBeforeUnmount(() => {
       <h1 class="hero-headline whitespace-pre-line">{{ headline }}</h1>
       <p class="sr-only">{{ roleStatic }}</p>
       <p class="hero-role" aria-hidden="true">
-        <span>{{ roleText }}</span><span class="hero-caret"></span>
+        <bdi>{{ roleText }}</bdi><span class="hero-caret"></span>
       </p>
       <div class="hero-cta">
         <button type="button" class="btn btn-primary" @click="go(SECTION_KEYS.indexOf('projects'))">
@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
     inset-inline-start: var(--gutter-mobile);
     inset-inline-end: var(--gutter-mobile);
     max-width: none;
-    top: 32%;
+    top: 22%;
   }
   .hero-field {
     width: 96vw;
@@ -244,8 +244,10 @@ onBeforeUnmount(() => {
     display: none;
   }
   .hero-photo {
-    height: 50vh;
-    inset-inline-end: -6vw;
+    height: 40vh;
+    max-height: 380px;
+    inset-inline-end: -8vw;
+    pointer-events: none;
   }
 }
 </style>

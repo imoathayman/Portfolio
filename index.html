@@ -9,6 +9,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <title>Moath Ayman — Full-stack systems developer</title>
     <meta name="description" content="Moath Ayman — full-stack systems developer. Backend, database design, and frontend, built as one system." />
+    <meta property="og:title" content="Moath Ayman — Full-stack systems developer" />
+    <meta property="og:description" content="Moath Ayman — full-stack systems developer. Backend, database design, and frontend, built as one system." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Moath Ayman — Full-stack systems developer" />
+    <meta name="twitter:description" content="Moath Ayman — full-stack systems developer. Backend, database design, and frontend, built as one system." />
+    <script>
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
   </head>
   <body>
     <div id="app"></div>

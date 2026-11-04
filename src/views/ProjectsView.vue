@@ -20,6 +20,7 @@ function setTileRef(el, i) {
 
 const detailRef = ref(null)
 const halfRef = ref(null)
+const closeBtnRef = ref(null)
 
 function setActive(i) {
   activeIndex.value = i
@@ -50,6 +51,9 @@ async function openProject(i) {
     half.style.transform = 'none'
     half.style.borderRadius = '0'
     detail.classList.add('open')
+    setTimeout(() => {
+      closeBtnRef.value?.focus()
+    }, 450)
   })
 }
 
@@ -58,14 +62,15 @@ function closeProject(instant) {
   const half = halfRef.value
   if (!detail) return
 
-  if (instant || openIndex.value === null || detail.hidden) {
+  const lastIndex = openIndex.value
+  if (instant || lastIndex === null || detail.hidden) {
     detail.hidden = true
     detail.classList.remove('open')
     openIndex.value = null
     return
   }
 
-  const tile = tileRefs.value[openIndex.value]
+  const tile = tileRefs.value[lastIndex]
   detail.classList.remove('open')
   if (tile && half) {
     const rect = tile.getBoundingClientRect()
@@ -80,6 +85,7 @@ function closeProject(instant) {
       half.style.transform = 'none'
     }
     openIndex.value = null
+    tileRefs.value[lastIndex]?.focus()
   }, 580)
 }
 
@@ -131,17 +137,30 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="pr-detail" ref="detailRef" hidden>
+      <div
+        class="pr-detail"
+        ref="detailRef"
+        hidden
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pr-modal-title"
+      >
         <div class="pr-half" ref="halfRef">
           <ProjectWindowPlaceholder class="pr-half-win" />
         </div>
-        <button type="button" class="pr-close" :aria-label="t('projects.close')" @click="closeProject()">
+        <button
+          ref="closeBtnRef"
+          type="button"
+          class="pr-close"
+          :aria-label="t('projects.close')"
+          @click="closeProject()"
+        >
           <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
             <path d="M5 5l8 8M13 5l-8 8" />
           </svg>
         </button>
         <div class="pr-info" v-if="openProjectData">
-          <div class="pr-head"><span class="pr-name">{{ openProjectData.name }}</span></div>
+          <div class="pr-head"><span class="pr-name" id="pr-modal-title">{{ openProjectData.name }}</span></div>
           <p class="pr-role">{{ openProjectData.role }}</p>
           <p class="pr-desc">{{ openProjectData.desc }}</p>
           <div class="pr-metrics">
@@ -154,16 +173,21 @@ onBeforeUnmount(() => {
               <span class="chip" v-for="chip in openProjectData.chips" :key="chip">{{ chip }}</span>
             </div>
             <a
+              v-if="openProjectData.url"
               class="pr-link"
-              :href="openProjectData.url || '#'"
-              :target="openProjectData.url ? '_blank' : undefined"
-              :rel="openProjectData.url ? 'noopener' : undefined"
+              :href="openProjectData.url"
+              target="_blank"
+              rel="noopener"
             >
               {{ openProjectData.link }}
               <svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3.6 14.4 14.4 3.6" /><path d="M6.6 3.6h7.8v7.8" />
               </svg>
             </a>
+            <span v-else class="pr-status-badge">
+              <span class="status-dot"></span>
+              {{ openProjectData.status || openProjectData.link }}
+            </span>
           </div>
         </div>
       </div>
@@ -469,6 +493,22 @@ onBeforeUnmount(() => {
 .pr-link:hover {
   border-color: var(--color-primary-deep);
 }
+.pr-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary-deep);
+  display: inline-block;
+  opacity: 0.8;
+}
 
 @media (max-width: 900px) {
   .pr-row {
@@ -499,9 +539,12 @@ onBeforeUnmount(() => {
   .pr-info {
     width: auto;
     inset-inline: var(--gutter-mobile);
-    top: auto;
-    bottom: 5vh;
+    top: 47%;
+    bottom: var(--dock-clearance);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     transform: none;
+    padding-bottom: 12px;
   }
   .pr-detail.open .pr-info {
     transform: none;

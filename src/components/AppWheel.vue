@@ -55,7 +55,7 @@ onUnmounted(() => removeEventListener('resize', sizeWheel))
 <style scoped>
 .wheel {
   position: absolute;
-  left: 50%;
+  inset-inline-start: 50%;
   top: calc(50% + var(--R));
   width: 0;
   height: 0;

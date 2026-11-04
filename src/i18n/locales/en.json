@@ -3,6 +3,7 @@
     "name": "Moath Ayman"
   },
   "nav": {
+    "title": "Site sections",
     "hero": "Start",
     "about": "About",
     "skills": "Skills",
@@ -103,7 +104,7 @@
     "work": [
       { "y": "Jul — Aug 2023", "r": "Web development intern", "o": "Learn More Foundation · 120 hrs, Canadian Board accredited" },
       { "y": "Dec 2024 — May 2025", "r": "Full-stack developer", "o": "SpaceFlex — graduation project" },
-      { "y": "ADD DATE", "todo": true, "r": "Freelance developer", "o": "Digital wedding invitation SPA · Vue 3 + Tailwind" },
+      { "y": "Sep 2024", "r": "Freelance developer", "o": "Digital wedding invitation SPA · Vue 3 + Tailwind" },
       { "y": "Oct 2025", "r": "Student recruitment & academic advisor", "o": "University of Gaza · temporary contract" },
       { "y": "May — Aug 2026", "r": "Co-founder & lead system developer", "o": "DENT Platform" }
     ],
@@ -129,6 +130,7 @@
     "send": "Send",
     "note": "Demo form — not connected to a backend yet.",
     "done": "Message sent. I reply within a day.",
+    "reset": "Send another message",
     "foot": "© 2026 Moath Ayman · Gaza, Palestine"
   }
 }
