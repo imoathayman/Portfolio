@@ -71,10 +71,12 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="hero">
-    <div class="hero-field-soft" aria-hidden="true"></div>
-    <div class="hero-ring" aria-hidden="true"></div>
-    <div class="hero-field" aria-hidden="true"></div>
-    <img class="hero-photo" :src="photoUrl" :alt="t('hero.photoAlt')" draggable="false" />
+    <div class="hero-visual">
+      <div class="hero-field-soft" aria-hidden="true"></div>
+      <div class="hero-ring" aria-hidden="true"></div>
+      <div class="hero-field" aria-hidden="true"></div>
+      <img class="hero-photo" :src="photoUrl" :alt="t('hero.photoAlt')" draggable="false" />
+    </div>
     <div class="hero-content">
       <h1 class="hero-headline whitespace-pre-line">{{ headline }}</h1>
       <p class="sr-only">{{ roleStatic }}</p>
@@ -99,6 +101,9 @@ onBeforeUnmount(() => {
   height: 100dvh;
   width: 100%;
   overflow: hidden;
+}
+.hero-visual {
+  display: contents;
 }
 
 .hero-field {
@@ -227,43 +232,64 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 900px) {
+  .hero {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-between;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
+    gap: 20px;
+  }
   .hero-content {
-    inset-inline: var(--gutter-mobile);
-    max-width: none;
-    top: var(--pad-block-mobile);
+    position: static;
     transform: none;
+    inset: auto;
+    max-width: none;
+    width: 100%;
   }
   .hero-headline {
     font-size: clamp(28px, 7.8vw, 38px);
   }
   .hero-role {
-    margin-top: 14px;
+    margin-top: 12px;
     font-size: 16.5px;
     line-height: 1.7;
     min-height: 1.7em;
   }
   .hero-cta {
-    margin-top: 22px;
+    margin-top: 20px;
     gap: 12px;
   }
   .btn {
     padding: 11px 22px;
     font-size: 14.5px;
   }
-  .hero-field {
-    width: 92vw;
-    height: 60vh;
-    bottom: -14vh;
-    inset-inline-end: -22vw;
+  .hero-visual {
+    display: block;
+    position: relative;
+    width: min(62vw, 240px);
+    height: clamp(190px, 32vh, 275px);
+    margin-inline: auto;
+    flex-shrink: 0;
+    border-radius: 999px 999px 28px 28px;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 8px rgba(180, 211, 232, 0.35);
+    overflow: hidden;
+    z-index: 2;
   }
+  .hero-field,
   .hero-field-soft,
   .hero-ring {
     display: none;
   }
   .hero-photo {
-    height: 38vh;
-    max-height: 350px;
-    inset-inline-end: -4vw;
+    position: absolute;
+    bottom: 0;
+    inset-inline: 0;
+    margin-inline: auto;
+    height: 94%;
+    max-height: none;
+    width: auto;
     pointer-events: none;
   }
 }
