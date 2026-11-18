@@ -228,25 +228,42 @@ onBeforeUnmount(() => {
 
 @media (max-width: 900px) {
   .hero-content {
-    inset-inline-start: var(--gutter-mobile);
-    inset-inline-end: var(--gutter-mobile);
+    inset-inline: var(--gutter-mobile);
     max-width: none;
-    top: 22%;
+    top: var(--pad-block-mobile);
+    transform: none;
+  }
+  .hero-headline {
+    font-size: clamp(28px, 7.8vw, 38px);
+  }
+  .hero-role {
+    margin-top: 14px;
+    font-size: 16.5px;
+    line-height: 1.7;
+    min-height: 1.7em;
+  }
+  .hero-cta {
+    margin-top: 22px;
+    gap: 12px;
+  }
+  .btn {
+    padding: 11px 22px;
+    font-size: 14.5px;
   }
   .hero-field {
-    width: 96vw;
-    height: 70vh;
+    width: 92vw;
+    height: 60vh;
     bottom: -14vh;
-    inset-inline-end: -24vw;
+    inset-inline-end: -22vw;
   }
   .hero-field-soft,
   .hero-ring {
     display: none;
   }
   .hero-photo {
-    height: 40vh;
-    max-height: 380px;
-    inset-inline-end: -8vw;
+    height: 38vh;
+    max-height: 350px;
+    inset-inline-end: -4vw;
     pointer-events: none;
   }
 }
@@ -267,5 +284,11 @@ onBeforeUnmount(() => {
 [dir='rtl'] .hero-headline {
   font-size: clamp(34px, 4.2vw, 58px);
   line-height: 1.34;
+}
+@media (max-width: 900px) {
+  [dir='rtl'] .hero-headline {
+    font-size: clamp(26px, 7.2vw, 36px);
+    line-height: 1.34;
+  }
 }
 </style>

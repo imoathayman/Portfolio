@@ -43,7 +43,7 @@ function onTouchEnd(e) {
     if (document.body.classList.contains('detail-open')) return
     if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) return
 
-    const scrollable = e.target?.closest('.about, .skills, .experience, .contact')
+    const scrollable = e.target?.closest('.about, .skills, .experience, .contact, .projects')
     if (scrollable) {
       const atTop = scrollable.scrollTop <= 5
       const atBottom = scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 5

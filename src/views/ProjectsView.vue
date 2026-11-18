@@ -511,25 +511,51 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 900px) {
+  .projects {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pr-wrap {
+    position: relative;
+    inset: auto;
+    min-height: 100%;
+    padding-inline: var(--gutter-mobile);
+    padding-block: var(--pad-block-mobile) var(--dock-clearance);
+  }
+  .pr-stage {
+    gap: 28px;
+    width: 100%;
+  }
   .pr-row {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 26px;
+    row-gap: 34px;
+    column-gap: 20px;
+    padding-top: 30px;
   }
   .pr-tile {
-    width: 38vw;
-    height: 150px;
+    width: min(40vw, 168px);
+    height: 122px;
+    padding: 0 14px 14px;
+    border-radius: 22px;
   }
   .pr-tile.act {
-    transform: scale(1.1);
+    transform: scale(1.08);
+  }
+  .pr-tile :deep(.pr-shot) {
+    top: -22px;
+    width: 84%;
+  }
+  .pr-tile.act :deep(.pr-shot) {
+    top: -28px;
   }
   .pr-active {
-    /* was 88vw → 21.6px gutters, out of step with the 24px used everywhere else */
-    width: calc(100vw - 2 * var(--gutter-mobile));
+    width: 100%;
   }
-  .pr-wrap {
-    /* keep the centred stage clear of the fixed dock */
-    padding-block-end: var(--dock-clearance);
+  .pr-detail {
+    position: fixed;
+    inset: 0;
   }
   .pr-half {
     width: 100%;
