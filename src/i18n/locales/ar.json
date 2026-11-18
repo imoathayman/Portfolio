@@ -94,6 +94,16 @@
         "chips": ["React", "Laravel"],
         "link": "المستودع",
         "url": "https://github.com/imoathayman/Space-Flex"
+      },
+      {
+        "name": "AgeCounter",
+        "status": "متاح أونلاين",
+        "role": "مطوّر واجهات أمامية",
+        "desc": "حاسبة عمر متجاوبة مبنية بـ HTML وSass وJavaScript. تحسب العمر الدقيق بالسنوات والأشهر والأيام مع التحقق من صحة التواريخ وعرض النتائج بحركة متدرجة.",
+        "metrics": [["٣", "وحدات"], ["١٠٠٪", "تجاوب"]],
+        "chips": ["JavaScript", "Sass", "HTML"],
+        "link": "عرض حي",
+        "url": "https://agecounter-pi.vercel.app/"
       }
     ]
   },

@@ -94,6 +94,16 @@
         "chips": ["React", "Laravel"],
         "link": "View repository",
         "url": "https://github.com/imoathayman/Space-Flex"
+      },
+      {
+        "name": "AgeCounter",
+        "status": "Live",
+        "role": "Front-end developer",
+        "desc": "Responsive age calculator built with HTML, Sass, and JavaScript. Computes exact age in years, months, and days with leap-year validation and animated count-up results.",
+        "metrics": [["3", "UNITS"], ["100%", "RESPONSIVE"]],
+        "chips": ["JavaScript", "Sass", "HTML"],
+        "link": "Live demo",
+        "url": "https://agecounter-pi.vercel.app/"
       }
     ]
   },
