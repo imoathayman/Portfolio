@@ -243,16 +243,26 @@ const railClass = computed(() => ({
     gap: 22px;
   }
   .ex-rail::before {
-    display: none;
+    top: 10px;
+    bottom: 10px;
+    inset-inline-start: 5px;
+    inset-inline-end: auto;
+    width: 1px;
+    height: auto;
   }
   .ex-track {
     flex-direction: column;
     gap: 16px;
   }
+  .ex-top,
+  .ex-bot {
+    align-items: stretch;
+  }
   .ex-top .ex-card,
   .ex-bot .ex-card {
+    flex: none;
     padding: 0;
-    padding-inline-start: 22px;
+    padding-inline-start: 24px;
   }
   .ex-card::before {
     display: none;
@@ -261,6 +271,7 @@ const railClass = computed(() => ({
   .ex-bot .ex-card::after {
     top: 6px;
     bottom: auto;
+    z-index: 1;
   }
 }
 </style>

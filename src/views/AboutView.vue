@@ -113,6 +113,10 @@ const { t, tm } = useI18n()
 }
 
 @media (max-width: 900px) {
+  .about-arc,
+  .about-arc-2 {
+    display: none;
+  }
   /* Fits at 640px tall but overflows once the browser URL bar takes ~80px.
      Scrolls only when it needs to; short content still reads as a static screen. */
   .about {
