@@ -1,194 +1,143 @@
 <script setup>
-import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ProjectWindowPlaceholder from '../components/ProjectWindowPlaceholder.vue'
 
 const { t, tm } = useI18n()
 
-const items = computed(() => tm('projects.items'))
+const items = computed(() => tm('projects.items') || [])
+const activeIndex = ref(0)
+const direction = ref(1)
 
-const activeIndex = ref(1)
-const openIndex = ref(null)
-const detailOpen = computed(() => openIndex.value !== null)
-const active = computed(() => items.value[activeIndex.value])
-const openProjectData = computed(() => (openIndex.value !== null ? items.value[openIndex.value] : null))
+const active = computed(() => items.value[activeIndex.value] || null)
+const total = computed(() => items.value.length)
 
-const tileRefs = ref([])
-function setTileRef(el, i) {
-  if (el) tileRefs.value[i] = el
+function formatNum(n) {
+  return String(n).padStart(2, '0')
 }
 
-const detailRef = ref(null)
-const halfRef = ref(null)
-const closeBtnRef = ref(null)
-
-function setActive(i) {
-  activeIndex.value = i
+function goTo(i) {
+  if (!total.value || i === activeIndex.value) return
+  direction.value = i > activeIndex.value ? 1 : -1
+  activeIndex.value = (i + total.value) % total.value
 }
 
-function flipTransform(half, rect) {
-  const h = half.getBoundingClientRect()
-  return `translate(${rect.left - h.left}px, ${rect.top - h.top}px) scale(${rect.width / h.width}, ${rect.height / h.height})`
+function next() {
+  if (!total.value) return
+  direction.value = 1
+  activeIndex.value = (activeIndex.value + 1) % total.value
 }
 
-async function openProject(i) {
-  openIndex.value = i
-  await nextTick()
-  const detail = detailRef.value
-  const half = halfRef.value
-  const tile = tileRefs.value[i]
-  if (!detail || !half || !tile) return
-
-  const rect = tile.getBoundingClientRect()
-  detail.hidden = false
-  detail.classList.remove('open')
-  half.style.transition = 'none'
-  half.style.transform = flipTransform(half, rect)
-  half.style.borderRadius = '26px'
-
-  requestAnimationFrame(() => {
-    half.style.transition = 'transform 620ms var(--ease-spin), border-radius 620ms var(--ease-spin)'
-    half.style.transform = 'none'
-    half.style.borderRadius = '0'
-    detail.classList.add('open')
-    setTimeout(() => {
-      closeBtnRef.value?.focus()
-    }, 450)
-  })
+function prev() {
+  if (!total.value) return
+  direction.value = -1
+  activeIndex.value = (activeIndex.value - 1 + total.value) % total.value
 }
-
-function closeProject(instant) {
-  const detail = detailRef.value
-  const half = halfRef.value
-  if (!detail) return
-
-  const lastIndex = openIndex.value
-  if (instant || lastIndex === null || detail.hidden) {
-    detail.hidden = true
-    detail.classList.remove('open')
-    openIndex.value = null
-    return
-  }
-
-  const tile = tileRefs.value[lastIndex]
-  detail.classList.remove('open')
-  if (tile && half) {
-    const rect = tile.getBoundingClientRect()
-    half.style.transition = 'transform 560ms var(--ease-spin), border-radius 560ms var(--ease-spin)'
-    half.style.transform = flipTransform(half, rect)
-    half.style.borderRadius = '26px'
-  }
-  setTimeout(() => {
-    detail.hidden = true
-    if (half) {
-      half.style.transition = 'none'
-      half.style.transform = 'none'
-    }
-    openIndex.value = null
-    tileRefs.value[lastIndex]?.focus()
-  }, 580)
-}
-
-watch(detailOpen, (isOpen) => {
-  document.body.classList.toggle('detail-open', isOpen)
-})
 
 function onKeydown(e) {
-  if (e.key === 'Escape') closeProject()
+  if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
+  const isRtl = document.documentElement.dir === 'rtl'
+  if (e.key === 'ArrowRight') {
+    isRtl ? prev() : next()
+  } else if (e.key === 'ArrowLeft') {
+    isRtl ? next() : prev()
+  }
 }
 
 onMounted(() => addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => {
-  removeEventListener('keydown', onKeydown)
-  document.body.classList.remove('detail-open')
-})
+onBeforeUnmount(() => removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
-  <section class="projects">
-    <div class="pr-wrap">
-      <div class="pr-stage" :class="{ hide: detailOpen }">
-        <div class="pr-row">
+  <section class="projects" aria-label="Projects showcase">
+    <div class="pr-wrap" v-if="active">
+      <div class="pr-slider">
+        <Transition :name="direction >= 0 ? 'slide-fwd' : 'slide-back'" mode="out-in">
+          <article :key="active.name" class="pr-case">
+            <div class="pr-visual">
+              <ProjectWindowPlaceholder class="pr-preview" :project="active.name" />
+            </div>
+
+            <div class="pr-body">
+              <div class="pr-meta-top">
+                <span class="pr-counter">{{ formatNum(activeIndex + 1) }} / {{ formatNum(total) }}</span>
+                <span v-if="active.status" class="pr-status">
+                  <span class="status-dot"></span>
+                  {{ active.status }}
+                </span>
+              </div>
+
+              <h2 class="pr-title">{{ active.name }}</h2>
+              <p class="pr-role">{{ active.role }}</p>
+              <p class="pr-desc">{{ active.desc }}</p>
+
+              <div class="pr-metrics" v-if="active.metrics?.length">
+                <div class="pr-metric" v-for="m in active.metrics" :key="m[1]">
+                  <b>{{ m[0] }}</b>
+                  <span>{{ m[1] }}</span>
+                </div>
+              </div>
+
+              <div class="pr-foot">
+                <div class="chips">
+                  <span class="chip" v-for="chip in active.chips" :key="chip">{{ chip }}</span>
+                </div>
+
+                <a
+                  v-if="active.url"
+                  class="pr-link"
+                  :href="active.url"
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {{ active.link }}
+                  <svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3.6 14.4 14.4 3.6" /><path d="M6.6 3.6h7.8v7.8" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </article>
+        </Transition>
+
+        <div class="pr-controls">
           <button
-            v-for="(p, i) in items"
-            :key="p.name"
-            :ref="(el) => setTileRef(el, i)"
             type="button"
-            class="pr-tile"
-            :class="{ act: i === activeIndex }"
-            @mouseenter="setActive(i)"
-            @focus="setActive(i)"
-            @click="i === activeIndex ? openProject(i) : setActive(i)"
+            class="pr-nav-btn"
+            aria-label="Previous project"
+            @click="prev"
           >
-            <ProjectWindowPlaceholder class="pr-shot" />
-            <span class="pr-tname">{{ p.name }}</span>
-            <span class="pr-tmeta">{{ p.chips.slice(0, 2).join(' · ') }}</span>
-          </button>
-        </div>
-        <div class="pr-active">
-          <div class="pr-ahead"><span class="pr-aname">{{ active.name }}</span></div>
-          <p class="pr-adesc">{{ active.desc }}</p>
-          <button type="button" class="pr-hint" @click="openProject(activeIndex)">
-            {{ t('projects.hint') }}
-            <svg width="13" height="13" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M3.6 14.4 14.4 3.6" /><path d="M6.6 3.6h7.8v7.8" />
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M11.5 4 6.5 9l5 5" />
             </svg>
           </button>
-        </div>
-      </div>
 
-      <div
-        class="pr-detail"
-        ref="detailRef"
-        hidden
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="pr-modal-title"
-      >
-        <div class="pr-half" ref="halfRef">
-          <ProjectWindowPlaceholder class="pr-half-win" />
-        </div>
-        <button
-          ref="closeBtnRef"
-          type="button"
-          class="pr-close"
-          :aria-label="t('projects.close')"
-          @click="closeProject()"
-        >
-          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
-            <path d="M5 5l8 8M13 5l-8 8" />
-          </svg>
-        </button>
-        <div class="pr-info" v-if="openProjectData">
-          <div class="pr-head"><span class="pr-name" id="pr-modal-title">{{ openProjectData.name }}</span></div>
-          <p class="pr-role">{{ openProjectData.role }}</p>
-          <p class="pr-desc">{{ openProjectData.desc }}</p>
-          <div class="pr-metrics">
-            <div class="pr-metric" v-for="m in openProjectData.metrics" :key="m[1]">
-              <b>{{ m[0] }}</b><span>{{ m[1] }}</span>
-            </div>
-          </div>
-          <div class="pr-foot">
-            <div class="chips">
-              <span class="chip" v-for="chip in openProjectData.chips" :key="chip">{{ chip }}</span>
-            </div>
-            <a
-              v-if="openProjectData.url"
-              class="pr-link"
-              :href="openProjectData.url"
-              target="_blank"
-              rel="noopener"
+          <div class="pr-tabs" role="tablist" aria-label="Select project">
+            <button
+              v-for="(p, i) in items"
+              :key="p.name"
+              type="button"
+              role="tab"
+              class="pr-tab"
+              :class="{ active: i === activeIndex }"
+              :aria-selected="i === activeIndex"
+              @click="goTo(i)"
             >
-              {{ openProjectData.link }}
-              <svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3.6 14.4 14.4 3.6" /><path d="M6.6 3.6h7.8v7.8" />
-              </svg>
-            </a>
-            <span v-else class="pr-status-badge">
-              <span class="status-dot"></span>
-              {{ openProjectData.status || openProjectData.link }}
-            </span>
+              <span class="pr-tab-num">{{ formatNum(i + 1) }}</span>
+              <span class="pr-tab-name">{{ p.name }}</span>
+            </button>
           </div>
+
+          <button
+            type="button"
+            class="pr-nav-btn"
+            aria-label="Next project"
+            @click="next"
+          >
+            <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6.5 4 11.5 9l-5 5" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -209,305 +158,303 @@ onBeforeUnmount(() => {
   z-index: 2;
   display: grid;
   place-items: center;
-  align-content: center;
-}
-.pr-stage {
-  display: grid;
-  justify-items: center;
-  gap: clamp(64px, 9vh, 112px);
-  transition: opacity 320ms var(--ease);
-}
-.pr-stage.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-.pr-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 1.8vw, 30px);
-}
-.pr-tile {
-  position: relative;
-  background: var(--color-soft);
-  border: 0;
-  border-radius: 26px;
-  cursor: pointer;
-  width: clamp(130px, 13vw, 186px);
-  height: clamp(180px, 25vh, 238px);
-  padding: 0 16px 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  transition:
-    transform 520ms var(--ease-spin),
-    background 420ms var(--ease),
-    box-shadow 420ms var(--ease);
-}
-.pr-tile.act {
-  background: var(--color-primary-deep);
-  transform: scale(1.24);
-  z-index: 3;
-}
-.pr-tile:focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 6px;
-}
-.pr-tile :deep(.pr-shot) {
-  position: absolute;
-  top: -26px;
-  inset-inline-start: 50%;
-  width: 86%;
-  transform: translateX(-50%);
-  transition: transform 520ms var(--ease-spin);
-}
-.pr-tile.act :deep(.pr-shot) {
-  top: -34px;
-}
-.pr-tname {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--color-ink);
-  transition: color 420ms var(--ease);
-}
-.pr-tmeta {
-  /* was 10.5px / --color-ink-2 on the soft-blue tile = 3.24:1, below the 4.5:1 floor */
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-ink);
-  margin-top: 3px;
-  letter-spacing: 0.02em;
-  transition: color 420ms var(--ease);
-}
-.pr-tile.act .pr-tname {
-  color: #fff;
-}
-.pr-tile.act .pr-tmeta {
-  /* --color-soft on --color-primary-deep was 3.5:1. Reusing #fff rather than adding a
-     palette tint; hierarchy against .pr-tname still reads via size (12 vs 15) + weight. */
-  color: #fff;
+  padding: clamp(72px, 10vh, 96px) clamp(24px, 4vw, 64px) clamp(96px, 13vh, 130px);
 }
 
-.pr-active {
-  width: min(680px, 70vw);
-  text-align: start;
+.pr-slider {
+  width: min(1020px, 100%);
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(16px, 2.4vh, 24px);
 }
-.pr-ahead {
+
+.pr-case {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-soft);
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px -30px rgba(44, 110, 158, 0.22);
+  min-height: clamp(360px, 50vh, 450px);
+}
+
+.pr-visual {
+  position: relative;
+  background: var(--color-bg-alt);
+  padding: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.pr-visual :deep(.win) {
+  border: 0;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pr-visual :deep(.win-shot) {
+  aspect-ratio: auto;
+}
+
+.pr-body {
+  padding: clamp(24px, 3vw, 36px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  background: var(--color-bg);
+}
+
+.pr-meta-top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
 }
-.pr-aname {
-  font-size: clamp(20px, 2.2vw, 28px);
+
+.pr-counter {
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.pr-adesc {
-  font-size: 14px;
-  line-height: 1.85;
-  color: var(--color-ink-2);
-  margin-top: 8px;
-}
-.pr-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--color-primary-deep);
-  margin-top: 14px;
-  background: none;
-  border: 0;
-  padding: 6px 0;
-  cursor: pointer;
-  border-bottom: 1.5px solid transparent;
-  transition: border-color var(--dur) var(--ease);
-}
-.pr-hint:hover {
-  border-color: var(--color-primary-deep);
-}
-.pr-hint:focus-visible {
-  outline: 2px solid var(--color-primary-deep);
-  outline-offset: 4px;
 }
 
-.pr-detail {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
+.pr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-2);
+  background: var(--color-bg-alt);
+  padding: 4px 10px;
+  border-radius: 99px;
 }
-.pr-detail[hidden] {
-  display: none;
-}
-.pr-half {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  inset-inline-start: 0;
-  width: 52%;
-  background: var(--color-primary-deep);
-  display: grid;
-  place-items: center;
-  padding: 6vh 5vw;
-  transform-origin: 0 0;
-}
-.pr-half :deep(.win) {
-  max-width: min(26vw, 380px);
-  opacity: 0;
-  transition: opacity 170ms var(--ease);
-}
-.pr-detail.open .pr-half :deep(.win) {
-  opacity: 1;
-  transition: opacity 300ms var(--ease) 400ms;
-}
-.pr-close {
-  position: absolute;
-  top: clamp(24px, 4vh, 40px);
-  inset-inline-start: clamp(24px, 2.6vw, 44px);
-  z-index: 8;
-  width: 46px;
-  height: 46px;
+
+.status-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  border: 0;
-  cursor: pointer;
+  background: var(--color-primary-deep);
+}
+
+.pr-title {
+  margin: 0;
+  font-size: clamp(24px, 2.5vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.pr-role {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-primary-deep);
+}
+
+.pr-desc {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--color-ink-2);
+}
+
+.pr-metrics {
+  display: flex;
+  gap: clamp(16px, 2vw, 28px);
+  padding: 12px 0;
+  margin-top: 2px;
+  border-top: 1px solid var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-bg-alt);
+  flex-wrap: wrap;
+}
+
+.pr-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pr-metric b {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+.pr-metric span {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-ink-2);
+}
+
+.pr-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-bg-alt);
+  border-radius: 99px;
+  padding: 4px 11px;
+}
+
+.pr-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--color-primary-deep);
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 99px;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.pr-link:hover {
+  background: #235880;
+  transform: translateY(-1px);
+}
+
+.pr-link:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* Slider controls */
+.pr-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pr-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-soft);
   background: var(--color-bg);
   color: var(--color-primary-deep);
   display: grid;
   place-items: center;
-  opacity: 0;
-  transform: scale(0.7);
+  cursor: pointer;
+  flex-shrink: 0;
   transition:
-    opacity 180ms var(--ease),
-    transform 180ms var(--ease),
-    background 260ms var(--ease);
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
 }
-.pr-detail.open .pr-close {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 300ms var(--ease) 420ms,
-    transform 300ms var(--ease) 420ms,
-    background 260ms var(--ease);
-}
-.pr-close:hover {
-  background: var(--color-primary);
-  color: var(--color-ink);
-}
-.pr-close:focus-visible {
-  outline: 2px solid var(--color-bg);
-  outline-offset: 3px;
-}
-.pr-info {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%) translateY(14px);
-  inset-inline-end: clamp(40px, 6vw, 110px);
-  width: min(38vw, 470px);
-  z-index: 6;
-  opacity: 0;
-  transition:
-    opacity 190ms var(--ease),
-    transform 190ms var(--ease);
-}
-.pr-detail.open .pr-info {
-  opacity: 1;
-  transform: translateY(-50%);
-  transition:
-    opacity 340ms var(--ease) 300ms,
-    transform 340ms var(--ease) 300ms;
-}
-.pr-name {
-  font-size: clamp(24px, 2.6vw, 36px);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.pr-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.pr-role {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-primary-deep);
-  margin-top: 12px;
-}
-.pr-desc {
-  font-size: 15px;
-  line-height: 1.9;
-  color: var(--color-ink-2);
-  margin-top: 12px;
-}
-.pr-metrics {
-  display: flex;
-  gap: clamp(22px, 3vw, 46px);
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--color-soft);
-}
-.pr-metric b {
-  display: block;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--color-ink);
-}
-.pr-metric span {
-  font-size: 11px;
-  color: var(--color-ink-2);
-  letter-spacing: 0.08em;
-}
-.pr-foot {
-  margin-top: 24px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.chip {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--color-ink);
-  border: 1px solid var(--color-soft);
-  border-radius: 999px;
-  padding: 5px 13px;
-}
-.pr-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-primary-deep);
-  text-decoration: none;
-  border-bottom: 1.5px solid transparent;
-  padding-bottom: 2px;
-}
-.pr-link:hover {
-  border-color: var(--color-primary-deep);
-}
-.pr-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-ink-2);
-}
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
+
+.pr-nav-btn:hover {
   background: var(--color-primary-deep);
-  display: inline-block;
-  opacity: 0.8;
+  border-color: var(--color-primary-deep);
+  color: #fff;
+}
+
+.pr-nav-btn:focus-visible {
+  outline: 2px solid var(--color-primary-deep);
+  outline-offset: 2px;
+}
+
+.pr-tabs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--color-bg-alt);
+  border-radius: 99px;
+  border: 1px solid var(--color-soft);
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.pr-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--color-ink-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.pr-tab:hover {
+  color: var(--color-ink);
+}
+
+.pr-tab.active {
+  background: var(--color-primary-deep);
+  color: #fff;
+}
+
+.pr-tab:focus-visible {
+  outline: 2px solid var(--color-primary-deep);
+  outline-offset: 2px;
+}
+
+.pr-tab-num {
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+/* Transitions */
+.slide-fwd-enter-active,
+.slide-fwd-leave-active,
+.slide-back-enter-active,
+.slide-back-leave-active {
+  transition: opacity 240ms var(--ease), transform 280ms var(--ease);
+}
+
+.slide-fwd-enter-from {
+  opacity: 0;
+  transform: translateX(18px);
+}
+.slide-fwd-leave-to {
+  opacity: 0;
+  transform: translateX(-18px);
+}
+
+.slide-back-enter-from {
+  opacity: 0;
+  transform: translateX(-18px);
+}
+.slide-back-leave-to {
+  opacity: 0;
+  transform: translateX(18px);
 }
 
 @media (max-width: 900px) {
@@ -520,79 +467,59 @@ onBeforeUnmount(() => {
     position: relative;
     inset: auto;
     min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding-inline: var(--gutter-mobile);
     padding-block: var(--pad-block-mobile) var(--dock-clearance);
   }
-  .pr-stage {
-    gap: 28px;
-    width: 100%;
-  }
-  .pr-row {
-    flex-wrap: wrap;
-    justify-content: center;
-    row-gap: 34px;
-    column-gap: 20px;
-    padding-top: 30px;
-  }
-  .pr-tile {
-    width: min(40vw, 168px);
-    height: 122px;
-    padding: 0 14px 14px;
+  .pr-case {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: auto;
     border-radius: 22px;
   }
-  .pr-tile.act {
-    transform: scale(1.08);
+  .pr-visual {
+    padding: 0;
+    aspect-ratio: 16 / 10;
   }
-  .pr-tile :deep(.pr-shot) {
-    top: -22px;
-    width: 84%;
+  .pr-body {
+    padding: 18px 16px 20px;
+    gap: 10px;
+    min-width: 0;
   }
-  .pr-tile.act :deep(.pr-shot) {
-    top: -28px;
-  }
-  .pr-active {
+  .pr-controls {
     width: 100%;
+    min-width: 0;
+    gap: 6px;
   }
-  .pr-detail {
-    position: fixed;
-    inset: 0;
+  .pr-nav-btn {
+    width: 34px;
+    height: 34px;
   }
-  .pr-half {
-    width: 100%;
-    height: 44%;
-    bottom: auto;
+  .pr-tabs {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    gap: 2px;
+    padding: 3px;
+    scrollbar-width: none;
   }
-  .pr-info {
-    width: auto;
-    inset-inline: var(--gutter-mobile);
-    top: 47%;
-    bottom: var(--dock-clearance);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    transform: none;
-    padding-bottom: 12px;
+  .pr-tabs::-webkit-scrollbar {
+    display: none;
   }
-  .pr-detail.open .pr-info {
-    transform: none;
+  .pr-tab {
+    padding: 6px 8px;
+    font-size: 11.5px;
   }
-  .pr-metrics {
-    gap: 22px;
+  .pr-tab-num {
+    display: none;
   }
 }
 </style>
 
 <style>
-/*
-  Unscoped on purpose (see HeroView.vue for the :global()-vs-Tailwind-pipeline bug).
-  Note: `:deep()` only means anything inside `<style scoped>` — plain `.pr-tile .pr-shot`
-  here matches the same specificity as the scoped `:deep()` rule above, and this block's
-  later source position is what lets it win the cascade.
-*/
-[dir='rtl'] .pr-tile .pr-shot {
-  transform: translateX(50%);
-}
 [dir='rtl'] .pr-link svg,
-[dir='rtl'] .pr-hint svg {
+[dir='rtl'] .pr-nav-btn svg {
   transform: scaleX(-1);
 }
 </style>
