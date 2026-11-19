@@ -237,8 +237,8 @@ onBeforeUnmount(() => {
     flex-direction: column-reverse;
     justify-content: center;
     padding-inline: var(--gutter-mobile);
-    padding-block: var(--pad-block-mobile) var(--dock-clearance);
-    gap: clamp(24px, 4.5vh, 44px);
+    padding-block: var(--pad-block-mobile) calc(var(--dock-clearance) - 14px);
+    gap: clamp(28px, 5vh, 48px);
   }
   .hero-content {
     position: static;
@@ -267,8 +267,8 @@ onBeforeUnmount(() => {
   .hero-visual {
     display: block;
     position: relative;
-    width: min(62vw, 240px);
-    height: clamp(190px, 32vh, 275px);
+    width: min(72vw, 285px);
+    height: clamp(230px, 37vh, 325px);
     margin-inline: auto;
     flex-shrink: 0;
     border-radius: 999px 999px 28px 28px;
