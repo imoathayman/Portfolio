@@ -194,7 +194,8 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
     position: absolute;
     top: 0;
     inset-inline: 0;
-    height: 60px;
+    height: calc(60px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
     align-items: center;
     justify-content: space-between;
     padding-inline: var(--gutter-mobile);
@@ -232,7 +233,7 @@ const currentLabel = computed(() => t(`nav.${SECTION_KEYS[cur.value]}`))
   .dock {
     flex-direction: row;
     top: auto;
-    bottom: 26px;
+    bottom: var(--dock-bottom-mobile);
     /* `inset-inline-start:50%` + `translateX(-50%)` does NOT centre in RTL: the inset
        resolves to `right:50%` while translateX stays physical, so the two compound and
        pushed the whole dock off-screen in Arabic. Auto margins centre in both directions. */

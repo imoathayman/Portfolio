@@ -235,10 +235,10 @@ onBeforeUnmount(() => {
   .hero {
     display: flex;
     flex-direction: column-reverse;
-    justify-content: space-between;
+    justify-content: center;
     padding-inline: var(--gutter-mobile);
     padding-block: var(--pad-block-mobile) var(--dock-clearance);
-    gap: 20px;
+    gap: clamp(24px, 4.5vh, 44px);
   }
   .hero-content {
     position: static;
